@@ -19,26 +19,15 @@
 rm(list = ls())
 library(tidyverse)
 library(patchwork)   # Now on CRAN: install.packages("patchwork")
+source("biostats-2/R/biostats2_helpers.R")   # Loads make_dTransform() & summary_se_within()!
 theme_set(theme_minimal(base_size = 14))
 
 
 # ---- 1. Load & Transform Cone-Isolating Psychophysics Data ------------------
 # `full_data.csv`: human subjects measured on 6 contrast detection conditions:
 #   A = Achromatic, L = L-cone, M = M-cone, Sneg = S-decrement, Spos = S-increment, S = S-Gabor
-# Psychophysical contrast thresholds span orders of magnitude, so we take log10.
-
-d_full <- read.csv("biostats-2/data/full_data.csv", check.names = TRUE)
-
-d_trans <- tibble(
-  subject = factor(d_full$subject),
-  RE      = d_full$RE,                 # Refractive error (Diopters)
-  A       = log10(d_full$thr1),
-  L       = log10(d_full$thr2),
-  M       = log10(d_full$thr3),
-  Sneg    = log10(d_full$thr4),
-  Spos    = log10(d_full$thr5),
-  S       = log10(d_full$thr6)
-)
+# `make_dTransform()` (from biostats2_helpers.R) loads and log10-transforms all 6 channels.
+d_trans <- make_dTransform("biostats-2/data/full_data.csv")
 head(d_trans)
 
 
@@ -67,35 +56,10 @@ d_long <- d_trans |>
                            levels = c("A", "L", "M", "Sneg", "Spos", "S"),
                            labels = c("A", "L", "M", "S-", "S+", "S")))
 
-# Within-subject summary helper (Cousineau-Morey 2008):
+# Within-subject summary helper `summary_se_within()` (Cousineau-Morey 2008):
+# Loaded automatically from `biostats-2/R/biostats2_helpers.R`!
 # Removes between-subject baseline differences before computing SE and 95% CI,
-# then multiplies by sqrt(k / (k - 1)) so error bars reflect WITHIN-subject precision!
-summary_se_within <- function(data, id_col, within_col, value_col, conf_level = 0.95) {
-  k <- n_distinct(data[[within_col]])
-  grand_mean <- mean(data[[value_col]], na.rm = TRUE)
-
-  normed <- data |>
-    group_by(.data[[id_col]]) |>
-    mutate(
-      subj_mean = mean(.data[[value_col]], na.rm = TRUE),
-      val_norm  = .data[[value_col]] - subj_mean + grand_mean
-    ) |>
-    ungroup()
-
-  # Raw group means + Morey-corrected within-subject SD / SE / CI
-  morey_factor <- sqrt(k / (k - 1))
-  normed |>
-    group_by(.data[[within_col]]) |>
-    summarize(
-      n         = sum(!is.na(.data[[value_col]])),
-      mean_val  = mean(.data[[value_col]], na.rm = TRUE),
-      sd_within = sd(val_norm, na.rm = TRUE) * morey_factor,
-      se_within = sd_within / sqrt(n),
-      ci_within = se_within * qt(0.5 + conf_level / 2, df = n - 1),
-      .groups   = "drop"
-    )
-}
-
+# then multiplies by sqrt(k / (k - 1)) so error bars reflect WITHIN-subject precision.
 within_summary <- summary_se_within(d_long, id_col = "subject",
                                     within_col = "stimulus", value_col = "log_thresh")
 print(within_summary)

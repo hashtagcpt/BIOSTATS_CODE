@@ -8,7 +8,7 @@ This folder contains clean starter templates for every Biostats II homework and 
 1. Open **`BIOSTATS_CODE.Rproj`** in RStudio so your working directory is the repository root.
 2. Open the starter `.R` file for the assignment below and immediately choose **File -> Save As...** using the required naming convention:
    - `[yourfullname]_assignment_1.R` (no spaces, e.g., `JaneDoe_assignment_1.R`).
-3. Fill in your code and written comments under each question heading.
+3. Fill in your code and written comments under each question heading. *(Note: Assignments that need course helper functions like `make_dTransform()` or `datasim()` load them automatically via `source("biostats-2/R/biostats2_helpers.R")` at the top—just run that line with your `library()` lines!)*
 4. Before submitting, restart R (**Session -> Restart R**) and **Source** your entire script from top to bottom to guarantee it runs cleanly without errors or missing packages.
 
 ## Assignment Directory

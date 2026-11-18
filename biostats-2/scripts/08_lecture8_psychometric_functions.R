@@ -22,6 +22,7 @@ library(tidyverse)
 library(R.matlab)    # Read MATLAB .mat files
 library(psyphy)      # Supplies mafc.logit(m) link function for m-AFC psychophysics!
 library(modelfree)   # Supplies threshold_slope()
+source("biostats-2/R/biostats2_helpers.R")   # Loads datasim()!
 theme_set(theme_minimal(base_size = 14))
 set.seed(2026)
 
@@ -141,17 +142,8 @@ cat(sprintf("Bootstrap 95%% CI for 75%% threshold: [%.4f, %.4f] (based on %d val
             ci_thresh[1], ci_thresh[2], sum(!is.na(boot_thresholds))))
 
 
-# ---- 4. Reusable Psychometric Simulator (`datasim`, used in Assignment 4) ---
-datasim <- function(contrasts, pcorrect, ntrials) {
-  stopifnot(length(contrasts) == length(pcorrect))
-  map2_dfr(contrasts, pcorrect, \(c_val, p_val) {
-    tibble(
-      contrast = rep(c_val, ntrials),
-      correct  = rbinom(ntrials, size = 1, prob = p_val)
-    )
-  })
-}
-
+# ---- 4. Reusable Psychometric Simulator (`datasim`, loaded via helpers) -----
+# `datasim()` lives in `biostats-2/R/biostats2_helpers.R` (used here & in Assignment 4).
 # Quick demo: simulate 20 trials/level across 10 contrast levels
 sim_demo <- datasim(
   contrasts = seq(0.01, 0.10, length.out = 10),

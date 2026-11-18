@@ -33,6 +33,7 @@ BIOSTATS_CODE/
 │   └── scripts/                    # 15 numbered teaching scripts (Weeks 1–8 + Optional)
 └── biostats-2/                     # COURSE 2: Applied R, Psychophysics, Bayes & Assignments
     ├── README.md                   # Full Biostats II lecture map & dataset dictionary
+    ├── R/                          # Shared helpers (`biostats2_helpers.R`, loaded via one `source()` line)
     ├── data/                       # Lab CSV, Excel (.xlsx) & MATLAB (.mat) datasets + spectra/
     ├── scripts/                    # 10 numbered applied R lecture scripts
     └── assignments/                # Clean starter templates for Homeworks 1–2 & Assignments 1–4

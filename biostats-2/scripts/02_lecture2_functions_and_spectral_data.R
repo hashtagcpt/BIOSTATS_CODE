@@ -20,28 +20,18 @@ rm(list = ls())
 library(tidyverse)
 library(readxl)
 library(patchwork)
+source("biostats-2/R/biostats2_helpers.R")   # Loads load_spd() cleanly!
 theme_set(theme_minimal(base_size = 13))
 
 
-# ---- 1. Writing a Clean Helper Function for Instrument Excel Files ----------
+# ---- 1. Inspecting Our Reusable Helper Function (`load_spd`) ----------------
 # Lab spectroradiometers (like LEDmotive) export multi-sheet Excel workbooks
 # where the raw Spectral Power Distribution (SPD, in W / nm / m^2) sits in
 # specific rows of the 'SPD raw data' sheet.
-# Instead of repeating 15 lines of cleaning code 8 times, write ONE function!
-
-load_spd <- function(file_path, condition_name,
-                     start_row = 16, end_row = 96) {
-  raw <- readxl::read_xlsx(file_path, sheet = "SPD raw data",
-                           .name_repair = "minimal")
-
-  tibble(
-    wavelength = as.numeric(raw[[1]][start_row:end_row]),
-    spd        = as.numeric(raw[[2]][start_row:end_row]),
-    condition  = factor(condition_name)
-  ) |>
-    filter(!is.na(wavelength), !is.na(spd)) |>
-    arrange(wavelength)
-}
+# Rather than defining or re-running `load_spd()` interactively every time,
+# it lives in `biostats-2/R/biostats2_helpers.R` and is loaded via `source()`!
+# You can inspect its code anytime by printing its name:
+print(load_spd)
 
 
 # ---- 2. Batch-Loading Spectral Reports with purrr::map2_dfr() ---------------

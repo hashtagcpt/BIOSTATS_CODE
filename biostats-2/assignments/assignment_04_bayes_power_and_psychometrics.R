@@ -9,21 +9,12 @@ library(tidyverse)
 library(BayesFactor)
 library(pwr)
 library(modelfree)
+source("biostats-2/R/biostats2_helpers.R")   # Loads make_dTransform() & datasim()!
 
 set.seed(2026)
 
-# Starter data loading for Question 1
-d_full <- read.csv("biostats-2/data/full_data.csv", check.names = TRUE)
-d_trans <- data.frame(
-  subject = factor(d_full$subject),
-  RE      = d_full$RE,
-  A       = log10(d_full$thr1),
-  L       = log10(d_full$thr2),
-  M       = log10(d_full$thr3),
-  Sneg    = log10(d_full$thr4),
-  Spos    = log10(d_full$thr5),
-  S       = log10(d_full$thr6)
-)
+# Starter data loading for Question 1 (`BayesFactor` expects a base data.frame)
+d_trans <- as.data.frame(make_dTransform("biostats-2/data/full_data.csv"))
 
 
 # --- Question 1 [4 points] ---
@@ -46,22 +37,13 @@ d_trans <- data.frame(
 
 
 # --- Question 3 [3 points] ---
-# Use the `datasim()` helper below to simulate a yes/no psychometric dataset:
+# Use the `datasim()` helper (already loaded by `source("biostats-2/R/biostats2_helpers.R")`
+# at the top of this script!) to simulate a yes/no psychometric dataset:
 #   - `contrasts`: 10 evenly spaced values from 0.01 to 0.10
 #   - `pcorrect` : 10 evenly spaced probabilities from 0 to 1
 #   - `ntrials`  : 20 trials per contrast level
 # Fit a binomial logistic GLM (`glm(..., family = binomial(link = "logit"))`),
 # plot the observed proportions + fitted smooth psychometric curve, and compute
 # the 50% threshold using `modelfree::threshold_slope()` (or `-b0 / b1`).
-
-datasim <- function(contrasts, pcorrect, ntrials) {
-  stopifnot(length(contrasts) == length(pcorrect))
-  map2_dfr(contrasts, pcorrect, \(c_val, p_val) {
-    tibble(
-      contrast = rep(c_val, ntrials),
-      correct  = rbinom(ntrials, size = 1, prob = p_val)
-    )
-  })
-}
 
 # YOUR CODE HERE:

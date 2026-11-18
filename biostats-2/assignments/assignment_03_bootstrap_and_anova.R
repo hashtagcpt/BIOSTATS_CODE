@@ -10,21 +10,13 @@ library(tidyverse)
 library(boot)
 library(car)
 library(patchwork)
+source("biostats-2/R/biostats2_helpers.R")   # Loads make_dTransform() & boot_reg()!
 
 set.seed(2026)
 
 # Starter data loading
-d_full <- read.csv("biostats-2/data/full_data.csv", check.names = TRUE)
-d_trans <- tibble(
-  subject = factor(d_full$subject),
-  RE      = d_full$RE,
-  A       = log10(d_full$thr1),
-  L       = log10(d_full$thr2),
-  M       = log10(d_full$thr3),
-  Sneg    = log10(d_full$thr4),
-  Spos    = log10(d_full$thr5),
-  S       = log10(d_full$thr6)
-)
+d_full  <- read.csv("biostats-2/data/full_data.csv", check.names = TRUE)
+d_trans <- make_dTransform("biostats-2/data/full_data.csv")
 
 birds <- readr::read_csv("biostats-2/data/Monitor_Birds.csv", show_col_types = FALSE) |>
   mutate(condition = factor(condition), Light = factor(Light))

@@ -19,6 +19,7 @@ library(effsize)     # For cohen.d()
 library(lsr)         # For etaSquared()
 library(pwr)         # For pwr.t.test(), pwr.anova.test()
 library(boot)        # For bootstrapping Cohen's d
+source("biostats-2/R/biostats2_helpers.R")   # Loads boot_cohens_d()!
 # Note: We load MASS::genotype via data(..., package = "MASS") below rather than
 # library(MASS), so MASS::select() never masks dplyr::select() in your RStudio session!
 theme_set(theme_minimal(base_size = 13))
@@ -33,18 +34,14 @@ print(effsize::cohen.d(sample_1, sample_2))
 
 # Example 2 (Solves Lecture 7 Exercise 1):
 # Bootstrap a 95% CI for Cohen's d comparing White vs. Yellow light within the
-# "Noise" condition of `Monitor_Birds.csv` on `postRE` (post-exposure refraction)!
+# "Noise" condition of `Monitor_Birds.csv` on `postRE` (post-exposure refraction)
+# using `boot_cohens_d()` from `biostats-2/R/biostats2_helpers.R`!
 birds <- readr::read_csv("biostats-2/data/Monitor_Birds.csv", show_col_types = FALSE) |>
-  filter(condition == "Noise", Light %in% c("White", "Yellow"))
+  filter(condition == "Noise", Light %in% c("White", "Yellow")) |>
+  mutate(Light = factor(Light))
 
-boot_d_fn <- function(data, idx) {
-  d_sub <- data[idx, ]
-  # Handle rare edge resample missing a group gracefully
-  if (n_distinct(d_sub$Light) < 2) return(NA_real_)
-  effsize::cohen.d(postRE ~ factor(Light), data = d_sub)$estimate
-}
-
-boot_d <- boot::boot(data = birds, statistic = boot_d_fn, R = 2000)
+boot_d <- boot::boot(data = birds, statistic = boot_cohens_d,
+                     formula = postRE ~ Light, R = 2000)
 cat("\n--- Bootstrap 95% Percentile CI for Cohen's d (Noise: White vs Yellow, postRE) ---\n")
 cat(sprintf("Observed Cohen's d = %.3f\n", boot_d$t0))
 print(boot::boot.ci(boot_d, type = "perc"))

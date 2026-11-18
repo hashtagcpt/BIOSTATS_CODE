@@ -13,6 +13,8 @@ This folder is a reorganized, bug-fixed, and modernized version of [`hashtagcpt/
 ```text
 biostats-2/
 ├── README.md                                          # This guide
+├── R/                                                 # Shared helper functions loaded with one `source()` line!
+│   └── biostats2_helpers.R                            # load_spd, make_dTransform, summary_se_within, boot_*, datasim
 ├── data/                                              # Vision-science lab CSV, Excel & MATLAB datasets
 │   ├── Example-Data-1.csv / .xlsx                     # Multi-format import practice (OD/OS)
 │   ├── CPT_1_16_blurLevelDiscrim.mat                  # MATLAB blur discrimination file
@@ -47,6 +49,18 @@ biostats-2/
     ├── assignment_03_bootstrap_and_anova.R
     └── assignment_04_bayes_power_and_psychometrics.R
 ```
+
+---
+
+## Shared Helper Functions (`biostats-2/R/biostats2_helpers.R`)
+
+All reusable course functions live in **one** plain `.R` file ([`R/biostats2_helpers.R`](R/biostats2_helpers.R)) instead of sitting at the bottom of long lecture scripts. Load them all at once with a single line at the top of any script or assignment:
+
+```r
+source("biostats-2/R/biostats2_helpers.R")
+```
+
+This avoids scrolling/highlighting bugs when running code interactively in RStudio—without the complexity of building a custom R package. Provided helpers: `load_spd()`, `make_dTransform()`, `summary_se_within()`, `score_subsets()`, `boot_mean()`, `boot_median()`, `boot_reg()`, `boot_cohens_d()`, and `datasim()`. *(Small learning-to-code examples like `funny_add()` and `lucky13()` remain inline in Lecture 1.)*
 
 ---
 

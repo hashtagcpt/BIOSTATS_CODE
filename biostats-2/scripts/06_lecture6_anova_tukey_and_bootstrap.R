@@ -20,23 +20,13 @@ rm(list = ls())
 library(tidyverse)
 library(car)         # For car::leveneTest()
 library(boot)        # For boot() and boot.ci()
+source("biostats-2/R/biostats2_helpers.R")   # Loads make_dTransform(), boot_mean(), boot_median(), boot_reg()!
 theme_set(theme_minimal(base_size = 13))
 set.seed(2026)
 
 
 # ---- 1. Levene's Test, One-Way ANOVA & Tukey HSD on Cone Thresholds ---------
-d_full <- read.csv("biostats-2/data/full_data.csv", check.names = TRUE)
-
-d_long <- tibble(
-  subject = factor(d_full$subject),
-  RE      = d_full$RE,
-  A       = log10(d_full$thr1),
-  L       = log10(d_full$thr2),
-  M       = log10(d_full$thr3),
-  Sneg    = log10(d_full$thr4),
-  Spos    = log10(d_full$thr5),
-  S       = log10(d_full$thr6)
-) |>
+d_long <- make_dTransform("biostats-2/data/full_data.csv") |>
   pivot_longer(cols = A:S, names_to = "condition", values_to = "threshold") |>
   mutate(condition = factor(condition, levels = c("A", "L", "M", "Sneg", "Spos", "S")))
 
@@ -62,14 +52,13 @@ print(summary(aov(threshold ~ condition + Error(subject / condition), data = d_l
 
 
 # ---- 2. Bootstrapping a Mean (Card-Deck Activity) ---------------------------
-b_mean <- function(data, idx) mean(data[idx])
-
-# 36 numeric playing cards (2 through 10, 4 suits each)
+# `boot_mean()`, `boot_median()`, and `boot_reg()` are loaded from
+# `biostats-2/R/biostats2_helpers.R` — no need to re-run function blocks!
 full_deck  <- rep(2:10, each = 4)
 shuffled   <- sample(full_deck)
 samp_cards <- shuffled[1:18]   # Draw half the deck
 
-boot_cards <- boot::boot(data = samp_cards, statistic = b_mean, R = 2000)
+boot_cards <- boot::boot(data = samp_cards, statistic = boot_mean, R = 2000)
 cat("\n--- Bootstrap 95% CI for Card Sample Mean (R = 2,000) ---\n")
 print(boot::boot.ci(boot_cards, type = c("perc", "bca"), index = 1))
 
@@ -80,8 +69,7 @@ cvi_raw <- readr::read_csv("biostats-2/data/cvi.csv", show_col_types = FALSE)
 cvi_long <- cvi_raw |>
   pivot_longer(everything(), names_to = "measure", values_to = "score")
 
-b_median <- function(data, idx) median(data[idx])
-boot_cvi <- boot::boot(data = cvi_long$score, statistic = b_median, R = 2000)
+boot_cvi <- boot::boot(data = cvi_long$score, statistic = boot_median, R = 2000)
 
 cat("\n--- CVI Median & Bootstrap Percentile 95% CI ---\n")
 cat("Observed sample median:", median(cvi_long$score), "\n")
@@ -101,11 +89,6 @@ tibble(boot_med = boot_cvi$t[, 1]) |>
 # ---- 4. Bootstrapping Multiple Regression Coefficients ----------------------
 # Uses local `biostats-2/data/album_sales.csv` (no broken web URL!).
 album <- readr::read_csv("biostats-2/data/album_sales.csv", show_col_types = FALSE)
-
-boot_reg <- function(formula, data, idx) {
-  fit <- lm(formula, data = data[idx, ])
-  coef(fit)
-}
 
 boot_album <- boot::boot(
   data      = album,

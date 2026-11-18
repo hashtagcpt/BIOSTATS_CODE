@@ -18,26 +18,15 @@
 rm(list = ls())
 library(tidyverse)
 library(BayesFactor)
+source("biostats-2/R/biostats2_helpers.R")   # Loads make_dTransform()!
 theme_set(theme_minimal(base_size = 13))
 set.seed(2026)
 
 
 # ---- 1. Load & Prepare Datasets ---------------------------------------------
-make_dTransform <- function(path) {
-  d_full <- read.csv(path, check.names = TRUE)
-  data.frame(
-    subject = factor(d_full$subject),
-    RE      = d_full$RE,
-    A       = log10(d_full$thr1),
-    L       = log10(d_full$thr2),
-    M       = log10(d_full$thr3),
-    Sneg    = log10(d_full$thr4),
-    Spos    = log10(d_full$thr5),
-    S       = log10(d_full$thr6)
-  )
-}
-
-d_trans <- make_dTransform("biostats-2/data/full_data.csv")
+# Note: `BayesFactor` functions expect base `data.frame` objects (not tibbles),
+# so we wrap `make_dTransform()` in `as.data.frame()`.
+d_trans <- as.data.frame(make_dTransform("biostats-2/data/full_data.csv"))
 birds   <- read.csv("biostats-2/data/Monitor_Birds.csv") |>
   mutate(
     condition = factor(condition),

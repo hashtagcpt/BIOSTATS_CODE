@@ -21,6 +21,7 @@ library(tidyverse)
 library(broom)
 library(lm.beta)     # Modern replacement for QuantPsyc::lm.beta()
 library(car)         # For car::vif() collinearity check
+source("biostats-2/R/biostats2_helpers.R")   # Loads make_dTransform() & score_subsets()!
 theme_set(theme_minimal(base_size = 13))
 
 
@@ -63,17 +64,7 @@ cat(sprintf("AIC: Simple = %.1f | Multiple = %.1f (lower is better)\n",
 # Question: Can log10 cone-isolating contrast thresholds (A, L, M, Sneg, Spos, S)
 # explain variance in Refractive Error (`RE`)?
 
-d_full <- read.csv("biostats-2/data/full_data.csv", check.names = TRUE)
-d_trans <- tibble(
-  subject = factor(d_full$subject),
-  RE      = d_full$RE,
-  A       = log10(d_full$thr1),
-  L       = log10(d_full$thr2),
-  M       = log10(d_full$thr3),
-  Sneg    = log10(d_full$thr4),
-  Spos    = log10(d_full$thr5),
-  S       = log10(d_full$thr6)
-)
+d_trans <- make_dTransform("biostats-2/data/full_data.csv")
 
 # 2a. Full 6-predictor model
 re_full <- lm(RE ~ A + L + M + Sneg + Spos + S, data = d_trans)
@@ -83,27 +74,11 @@ cat("Variance Inflation Factors (check collinearity among cone channels):\n")
 print(round(car::vif(re_full), 2))
 
 # 2b. Compare candidate 3-predictor and 2-predictor models systematically
-#     (finding the subset maximizing R^2, then checking Adjusted R^2 & AIC!)
+#     using `score_subsets()` loaded from `biostats-2/R/biostats2_helpers.R`!
 predictors <- c("A", "L", "M", "Sneg", "Spos", "S")
 
-score_subsets <- function(k) {
-  combos <- combn(predictors, k, simplify = FALSE)
-  map_dfr(combos, \(vars) {
-    fml <- reformulate(vars, response = "RE")
-    fit <- lm(fml, data = d_trans)
-    tibble(
-      k       = k,
-      formula = paste("RE ~", paste(vars, collapse = " + ")),
-      r2      = summary(fit)$r.squared,
-      adj_r2  = summary(fit)$adj.r.squared,
-      aic     = AIC(fit)
-    )
-  }) |>
-    arrange(desc(r2))
-}
-
-top3 <- score_subsets(3) |> slice_head(n = 3)
-top2 <- score_subsets(2) |> slice_head(n = 3)
+top3 <- score_subsets(d_trans, response = "RE", predictors = predictors, k = 3) |> slice_head(n = 3)
+top2 <- score_subsets(d_trans, response = "RE", predictors = predictors, k = 2) |> slice_head(n = 3)
 cat("\n--- Top 3-Predictor Models ---\n"); print(top3)
 cat("\n--- Top 2-Predictor Models ---\n"); print(top2)
 
