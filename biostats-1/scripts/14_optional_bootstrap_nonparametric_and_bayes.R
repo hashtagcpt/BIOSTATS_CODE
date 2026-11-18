@@ -112,23 +112,26 @@ tiny_tbut <- c(4.2, 6.5, 6.5, 11.0, 31.5)   # Notice tied values get average ran
 tibble(raw_tbut = tiny_tbut, rank_val = rank(tiny_tbut))
 
 # 4b. Mann-Whitney U / Wilcoxon Rank-Sum Test (2 independent groups, Slide 399):
-#     Compare skewed TBUT between Optometry and Graduate_VS students
+#     Compare skewed TBUT between Optometry and Graduate_VS students.
+#     `exact = FALSE` tells R to use the continuity-corrected normal approximation
+#     cleanly when tied clinical measurements are present (avoids ties warnings).
 cat("\n--- Wilcoxon Rank-Sum (Mann-Whitney U): TBUT by Program ---\n")
-print(wilcox.test(tbut_sec ~ program, data = clinic, conf.int = TRUE))
+print(wilcox.test(tbut_sec ~ program, data = clinic, conf.int = TRUE, exact = FALSE))
 
 # 4c. Wilcoxon Signed-Rank Test (paired data):
 #     Compare within-student Near vs. Far logMAR acuity
 cat("\n--- Wilcoxon Signed-Rank (Paired): Near vs. Far logMAR ---\n")
-print(wilcox.test(clinic$near_logmar, clinic$far_logmar, paired = TRUE, conf.int = TRUE))
+print(wilcox.test(clinic$near_logmar, clinic$far_logmar, paired = TRUE,
+                  conf.int = TRUE, exact = FALSE))
 
 # 4d. Kruskal-Wallis Test (non-parametric one-way ANOVA, Slide 401):
-#     Compare Efron redness grade (0-4 ordinal scale) across 4 eye-color groups
-#     or across Dry Eye Symptom groups / years in program!
+#     Compare TBUT across 4 student program years!
 cat("\n--- Kruskal-Wallis Test: TBUT across Student Program Years (1-4) ---\n")
 print(kruskal.test(tbut_sec ~ factor(year), data = clinic))
 
 # Follow-up pairwise Wilcoxon tests with Holm multiplicity correction:
-print(pairwise.wilcox.test(clinic$tbut_sec, factor(clinic$year), p.adjust.method = "holm"))
+print(pairwise.wilcox.test(clinic$tbut_sec, factor(clinic$year),
+                           p.adjust.method = "holm", exact = FALSE))
 
 
 # ---- 5. Bayesian Reasoning: Updating, Cards & Bayes Factors (Slides 402-409)

@@ -19,7 +19,8 @@ library(effsize)     # For cohen.d()
 library(lsr)         # For etaSquared()
 library(pwr)         # For pwr.t.test(), pwr.anova.test()
 library(boot)        # For bootstrapping Cohen's d
-library(MASS)        # For genotype dataset
+# Note: We load MASS::genotype via data(..., package = "MASS") below rather than
+# library(MASS), so MASS::select() never masks dplyr::select() in your RStudio session!
 theme_set(theme_minimal(base_size = 13))
 set.seed(2026)
 
@@ -50,8 +51,8 @@ print(boot::boot.ci(boot_d, type = "perc"))
 
 
 # ---- 2. Two-Way ANOVA Effect Size: Eta-Squared & Partial Eta-Squared --------
-# Reused from B2_Lecture_7.R using MASS::genotype
-data(genotype)
+# Reused from B2_Lecture_7.R using MASS::genotype (loaded cleanly without attaching MASS)
+data("genotype", package = "MASS")
 anova_geno <- aov(Wt ~ Litter * Mother, data = genotype)
 cat("\n--- Two-Way ANOVA (MASS::genotype) ---\n")
 print(summary(anova_geno))
@@ -71,9 +72,11 @@ d_grid <- tibble(cohens_d = seq(0.25, 0.80, length.out = 200)) |>
   ) |>
   pivot_longer(cols = c(n_two_sample, n_paired),
                names_to = "design", values_to = "n_required") |>
-  mutate(design = recode(design,
-                         n_two_sample = "Two-Sample Independent (n per group)",
-                         n_paired     = "Paired Within-Subject (total pairs)"))
+  mutate(design = dplyr::case_match(
+    design,
+    "n_two_sample" ~ "Two-Sample Independent (n per group)",
+    "n_paired"     ~ "Paired Within-Subject (total pairs)"
+  ))
 
 ggplot(d_grid, aes(x = cohens_d, y = n_required, colour = design)) +
   geom_line(linewidth = 1.2) +

@@ -1,6 +1,6 @@
 # =============================================================================
 #  LLM CODING LAB 01: WHY CHOICES MATTER WHEN WORKING WITH LLMs IN R
-#  Course  : Biostatistics & Experimental Design I & II (NECO)
+#  Course  : Biostatistics & Experimental Design
 #  Source  : Adapted & expanded from `choices_matter_with_llms.R` (biostats-2)
 #  Dataset : biostats-2/data/full_data.csv
 #
@@ -31,7 +31,7 @@ d_wide <- tibble(
   A       = log10(d_full$thr1),
   L       = log10(d_full$thr2),
   M       = log10(d_full$thr3),
-  `S-`    = log10(d_full$thr4),   # Notice the minus and plus signs in column names!
+  `S-`    = log10(d_full$thr4), # Notice the minus and plus signs in column names!
   `S+`    = log10(d_full$thr5),
   S       = log10(d_full$thr6)
 )
@@ -77,8 +77,10 @@ d_long <- df_tidy |>
 # ALWAYS verify after an LLM pivot:
 #   - Expected rows = nrow(df_tidy) * 6 conditions
 #   - Unique subjects should be UNCHANGED!
-cat(sprintf("\nVerification: wide rows = %d | long rows = %d (expected %d) | unique subjects = %d\n",
-            nrow(df_tidy), nrow(d_long), nrow(df_tidy) * 6, n_distinct(d_long$subject)))
+cat(sprintf(
+  "\nVerification: wide rows = %d | long rows = %d (expected %d) | unique subjects = %d\n",
+  nrow(df_tidy), nrow(d_long), nrow(df_tidy) * 6, n_distinct(d_long$subject)
+))
 head(d_long, 8)
 
 # Clean up temporary file

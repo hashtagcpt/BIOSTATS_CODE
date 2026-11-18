@@ -1,4 +1,4 @@
-> **Navigation:** [Back to BIOSTATS_CODE Hub](../README.md) | [Biostats I](../biostats-1/README.md) | [Biostats II](../biostats-2/README.md) | [Copy-Paste Prompt Templates](prompt_templates.md)
+> **Navigation:** [Back to BIOSTATS_CODE Hub](../README.md) | [Biostats I](../biostats-1/README.md) | [Biostats II](../biostats-2/README.md) | [Prompt Templates (Markdown)](prompt_templates.md) | [Prompt Templates (Plain Text .txt)](prompt_templates.txt)
 
 # Using LLM Coding Tools in Biostatistics (Beginner's Guide)
 
@@ -16,7 +16,8 @@ However, LLMs have one dangerous quirk in biostatistics: **they write fluent, co
 | File | What You Will Learn |
 |---|---|
 | [`README.md`](README.md) *(this file)* | Complete beginner workflow, privacy rules, and the 6-Point Statistical Sanity Checklist |
-| [`prompt_templates.md`](prompt_templates.md) | 8 copy-paste prompt recipes for importing data, plotting, debugging, explaining code, and auditing your own scripts |
+| [`prompt_templates.md`](prompt_templates.md) | 8 copy-paste prompt recipes formatted in Markdown (great for browsing on GitHub with the copy button) |
+| [`prompt_templates.txt`](prompt_templates.txt) | **Plain-text version** of all 8 prompt templates—easy to open in RStudio/Notepad/TextEdit and cut/paste cleanly with no Markdown formatting |
 | [`scripts/01_llm_workflow_wide_to_long.R`](scripts/01_llm_workflow_wide_to_long.R) | Hands-on example (adapted from `choices_matter_with_llms.R`): why clean tidyverse steps + good context keep LLMs out of coding "rabbit holes" |
 | [`scripts/02_catching_ai_stats_bugs_lab.R`](scripts/02_catching_ai_stats_bugs_lab.R) | Interactive R lab featuring **5 real, silent AI statistical bugs** (all run without R errors!) and how to spot and fix every single one |
 

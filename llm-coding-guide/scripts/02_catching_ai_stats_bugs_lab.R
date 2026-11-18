@@ -1,6 +1,6 @@
 # =============================================================================
 #  LLM CODING LAB 02: CATCHING 5 SILENT AI STATISTICAL BUGS IN OPTOMETRY
-#  Course  : Biostatistics & Experimental Design I & II (NECO)
+#  Course  : Biostatistics & Experimental Design
 #  Datasets: biostats-1/data/01_student_vision_clinic.csv
 #            biostats-1/data/02_iop_clinical_trial.csv
 #            biostats-1/data/03_fellow_eyes_axial_length.csv
@@ -26,8 +26,8 @@ library(lme4)
 library(lmerTest)
 set.seed(2026)
 
-clinic      <- readr::read_csv("biostats-1/data/01_student_vision_clinic.csv", show_col_types = FALSE)
-iop_trial   <- readr::read_csv("biostats-1/data/02_iop_clinical_trial.csv", show_col_types = FALSE)
+clinic <- readr::read_csv("biostats-1/data/01_student_vision_clinic.csv", show_col_types = FALSE)
+iop_trial <- readr::read_csv("biostats-1/data/02_iop_clinical_trial.csv", show_col_types = FALSE)
 fellow_eyes <- readr::read_csv("biostats-1/data/03_fellow_eyes_axial_length.csv", show_col_types = FALSE)
 
 
@@ -56,9 +56,11 @@ fixed_tbut <- clinic |>
   )
 
 cat("BUGGY AI (NA -> 0) :", sprintf("mean = %.2f s, SD = %.2f s\n", ai_bug_tbut$mean_tbut, ai_bug_tbut$sd_tbut))
-cat("VERIFIED FIX       :", sprintf("mean = %.2f s, SD = %.2f s (n = %d, %d missing)\n",
-                                    fixed_tbut$mean_tbut, fixed_tbut$sd_tbut,
-                                    fixed_tbut$n_complete, fixed_tbut$n_missing))
+cat("VERIFIED FIX       :", sprintf(
+  "mean = %.2f s, SD = %.2f s (n = %d, %d missing)\n",
+  fixed_tbut$mean_tbut, fixed_tbut$sd_tbut,
+  fixed_tbut$n_complete, fixed_tbut$n_missing
+))
 
 
 # =============================================================================
@@ -105,12 +107,16 @@ ai_unpaired <- t.test(drop_b$iop_followup, drop_b$iop_baseline)
 # Preserve within-patient matching with `paired = TRUE` (order: after, before)!
 fixed_paired <- t.test(drop_b$iop_followup, drop_b$iop_baseline, paired = TRUE)
 
-cat(sprintf("BUGGY (unpaired) : mean diff = %.2f | 95%% CI [%.2f, %.2f] | df = %.1f | p = %.2e\n",
-            diff(rev(ai_unpaired$estimate)), ai_unpaired$conf.int[1], ai_unpaired$conf.int[2],
-            ai_unpaired$parameter, ai_unpaired$p.value))
-cat(sprintf("VERIFIED (paired): mean diff = %.2f | 95%% CI [%.2f, %.2f] | df = %.1f | p = %.2e\n",
-            fixed_paired$estimate, fixed_paired$conf.int[1], fixed_paired$conf.int[2],
-            fixed_paired$parameter, fixed_paired$p.value))
+cat(sprintf(
+  "BUGGY (unpaired) : mean diff = %.2f | 95%% CI [%.2f, %.2f] | df = %.1f | p = %.2e\n",
+  diff(rev(ai_unpaired$estimate)), ai_unpaired$conf.int[1], ai_unpaired$conf.int[2],
+  ai_unpaired$parameter, ai_unpaired$p.value
+))
+cat(sprintf(
+  "VERIFIED (paired): mean diff = %.2f | 95%% CI [%.2f, %.2f] | df = %.1f | p = %.2e\n",
+  fixed_paired$estimate, fixed_paired$conf.int[1], fixed_paired$conf.int[2],
+  fixed_paired$parameter, fixed_paired$p.value
+))
 # Look at the 95% CI width: pairing makes the interval nearly 2x narrower!
 
 
@@ -137,12 +143,18 @@ fixed_patient_t <- t.test(al_mean ~ lens_group, data = patient_means)
 fixed_eye_lmm <- lmerTest::lmer(al_mm ~ lens_group + (1 | patient_id), data = eyes_long)
 lmm_row <- summary(fixed_eye_lmm)$coefficients["lens_groupSingleVision", ]
 
-cat(sprintf("BUGGY (80 pooled eyes) : df = %5.1f | p = %.4f  <-- FAKE sample size!\n",
-            ai_pooled_eyes$parameter, ai_pooled_eyes$p.value))
-cat(sprintf("VERIFIED (patient mean): df = %5.1f | p = %.4f\n",
-            fixed_patient_t$parameter, fixed_patient_t$p.value))
-cat(sprintf("VERIFIED (mixed model) : df = %5.1f | p = %.4f\n",
-            lmm_row["df"], lmm_row["Pr(>|t|)"]))
+cat(sprintf(
+  "BUGGY (80 pooled eyes) : df = %5.1f | p = %.4f  <-- FAKE sample size!\n",
+  ai_pooled_eyes$parameter, ai_pooled_eyes$p.value
+))
+cat(sprintf(
+  "VERIFIED (patient mean): df = %5.1f | p = %.4f\n",
+  fixed_patient_t$parameter, fixed_patient_t$p.value
+))
+cat(sprintf(
+  "VERIFIED (mixed model) : df = %5.1f | p = %.4f\n",
+  lmm_row["df"], lmm_row["Pr(>|t|)"]
+))
 
 
 # =============================================================================
@@ -158,12 +170,12 @@ longit_students <- tidyr::expand_grid(
   year       = factor(1:4)
 ) |>
   mutate(
-    group         = factor(if_else(student_id <= 15, "Optometry", "Law")),
-    student_id    = factor(student_id),
+    group = factor(if_else(student_id <= 15, "Optometry", "Law")),
+    student_id = factor(student_id),
     # Strong individual baseline VA differences (sd = 0.08) + steady yearly progression
     subj_baseline = rep(rnorm(30, 0, 0.08), each = 4),
-    far_va        = -0.05 + subj_baseline + 0.025 * (as.numeric(year) - 1) +
-                    if_else(group == "Optometry", 0.03, 0) + rnorm(n(), 0, 0.025)
+    far_va = -0.05 + subj_baseline + 0.025 * (as.numeric(year) - 1) +
+      if_else(group == "Optometry", 0.03, 0) + rnorm(n(), 0, 0.025)
   )
 
 # --- BUGGY AI CODE ---
@@ -176,7 +188,8 @@ ai_bug_aov <- summary(aov(far_va ~ group * year, data = longit_students))[[1]]
 # --- VERIFIED FIX ---
 # Mixed-effects model respecting repeated measures within `student_id`:
 fixed_lmm_longit <- anova(lmerTest::lmer(far_va ~ group * year + (1 | student_id),
-                                         data = longit_students))
+  data = longit_students
+))
 
 cat("BUGGY AI `aov(far_va ~ group * year)` (ignores repeated student_id!):\n")
 print(round(ai_bug_aov[, c("Df", "F value", "Pr(>F)")], 4))

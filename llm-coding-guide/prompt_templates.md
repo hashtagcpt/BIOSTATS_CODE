@@ -1,4 +1,4 @@
-> **Navigation:** [Back to LLM Coding Guide](README.md) | [BIOSTATS_CODE Hub](../README.md)
+> **Navigation:** [Back to LLM Coding Guide](README.md) | [Plain-Text Version (.txt) for Easy Cut/Paste](prompt_templates.txt) | [BIOSTATS_CODE Hub](../README.md)
 
 # Copy-Paste Prompt Templates for R & Biostatistics
 

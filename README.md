@@ -24,7 +24,8 @@ BIOSTATS_CODE/
 ├── README.md                       # Unified course hub (you are here)
 ├── llm-coding-guide/               # Using LLM coding tools safely with R
 │   ├── README.md                   # Beginner guide, 5-step workflow & 6-point sanity checklist
-│   ├── prompt_templates.md         # 8 copy-paste R + Biostatistics prompt recipes
+│   ├── prompt_templates.md         # 8 copy-paste R + Biostatistics prompt recipes (Markdown)
+│   ├── prompt_templates.txt        # Plain-text version of all 8 prompt templates (easy cut/paste)
 │   └── scripts/                    # 2 interactive LLM workflow & bug-catching R labs
 ├── biostats-1/                     # COURSE 1: Foundations, Design & Introductory R
 │   ├── README.md                   # Full Biostats I syllabus map & dataset dictionary
