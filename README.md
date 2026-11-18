@@ -210,4 +210,4 @@ BIOSTATS_CODE/
 
 ## Data & Provenance Notes
 - **Simulated vs. Lab Data:** All CSV files in `biostats-1/data/` are simulated illustrative teaching datasets (reproducible via `source("biostats-1/data/generate_teaching_datasets.R")`). Datasets in `biostats-2/data/` are curated teaching datasets from `hashtagcpt/biostats-2` (past student submissions excluded).
-- **Copyright:** Course materials are intended for educational use at the New England College of Optometry (NECO).
+
