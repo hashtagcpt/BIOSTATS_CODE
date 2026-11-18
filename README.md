@@ -12,7 +12,7 @@ If you have **never written a line of code**—or aren't even sure what a *file 
 
 | Section | Course / Purpose | Open Guide |
 |---|---|---|
-| **Biostatistics I** (`biostats-1/`) | Fall semester (GRS97003) — Concepts, experimental design, R basics & 11 simulated optometry datasets | **[Biostats I Guide](biostats-1/README.md)** |
+| **Biostatistics I** (`biostats-1/`) | Fall semester — Concepts, experimental design, R basics & 11 simulated optometry datasets | **[Biostats I Guide](biostats-1/README.md)** |
 | **Biostatistics II** (`biostats-2/`) | Spring semester — Applied R, vision-science lab data, psychophysics, Bayes Factors & assignments | **[Biostats II Guide](biostats-2/README.md)** |
 | **LLM Coding Tools** (`llm-coding-guide/`) | Using ChatGPT/Claude/Gemini/Copilot safely to learn R + plain-text cut/paste prompt templates | **[LLM Coding Guide](llm-coding-guide/README.md)** · **[Plain-Text Prompts (.txt)](llm-coding-guide/prompt_templates.txt)** |
 
